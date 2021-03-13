@@ -21,65 +21,6 @@ public class SeamCarving {
         this.picture = picture;
     }
 
-    private static void printSeam(SeamCarving carver, int[] seam, boolean direction) {
-        double totalSeamEnergy = 0.0;
-
-        for (int row = 0; row < carver.height(); row++) {
-            for (int col = 0; col < carver.width(); col++) {
-                double energy = carver.energy(col, row);
-                String marker = " ";
-                if ((direction == HORIZONTAL && row == seam[col]) ||
-                        (direction == VERTICAL && col == seam[row])) {
-                    marker = "*";
-                    totalSeamEnergy += energy;
-                }
-                StdOut.printf("%7.2f%s ", energy, marker);
-            }
-            StdOut.println();
-        }
-        // StdOut.println();
-        StdOut.printf("Total energy = %f\n", totalSeamEnergy);
-        StdOut.println();
-        StdOut.println();
-    }
-
-    // unit testing (optional)
-    public static void main(String[] args) {
-        File imageFile = new File("/Users/geodan/Documents/seam-carving/images-for-testing/10x12.png");
-        Picture picture = new Picture(imageFile);
-        StdOut.printf("%s (%d-by-%d image)\n", imageFile, picture.width(), picture.height());
-        StdOut.println();
-        StdOut.println("The table gives the dual-gradient energies of each pixel.");
-        StdOut.println("The asterisks denote a minimum energy vertical or horizontal seam.");
-        StdOut.println();
-
-        SeamCarving carver = new SeamCarving(picture);
-
-
-        StdOut.printf("Vertical seam: { ");
-        int[] verticalSeam = carver.findVerticalSeam();
-        for (int x : verticalSeam)
-            StdOut.print(x + " ");
-        StdOut.println("}");
-        printSeam(carver, verticalSeam, VERTICAL);
-
-        StdOut.printf("Horizontal seam: { ");
-        int[] horizontalSeam = carver.findHorizontalSeam();
-        for (int y : horizontalSeam)
-            StdOut.print(y + " ");
-        StdOut.println("}");
-        printSeam(carver, horizontalSeam, HORIZONTAL);
-
-        Picture resizedPic = ImageResize.resize(picture, 4, 5);
-        File resizedFilePath = new File("/Users/geodan/Documents/seam-carving/images-for-testing/10x12RESIZED.png");
-        resizedPic.save(resizedFilePath);
-        StdOut.printf("new image size is %d columns by %d rows\n", resizedPic.width(), resizedPic.height());
-        StdOut.printf("%s (%d-by-%d image)\n", resizedFilePath, picture.width(),
-                picture.height());
-
-
-    }
-
     /**
      * Current picture.
      *
@@ -225,9 +166,7 @@ public class SeamCarving {
         distanceToPixel = new double[width() * height()];
         edgeTo = new int[width() * height()];
 
-        // if(width() == 1){
-        //     return verticalSeam;
-        // }
+
         //set distance to top pixels to 0 and everything else to infinity
         //set energies in the energy matrix
         for (int col = 0; col < width(); col++) {
@@ -268,7 +207,6 @@ public class SeamCarving {
             }
         }
         //go back and find seam
-        //verticalSeam[height()-1] = pixelColumn(lastSeamPixel);
         for (int pixel = lastSeamPixel; pixel >= 0; pixel = edgeTo[pixel]) {
             int row = pixelRow(pixel);
             int column = pixelColumn(pixel);
@@ -361,6 +299,67 @@ public class SeamCarving {
 
     private int pixelNumber(int col, int row) {
         return (width() * row + col);
+    }
+
+
+    private static void printSeam(SeamCarving carver, int[] seam, boolean direction) {
+        double totalSeamEnergy = 0.0;
+
+        for (int row = 0; row < carver.height(); row++) {
+            for (int col = 0; col < carver.width(); col++) {
+                double energy = carver.energy(col, row);
+                String marker = " ";
+                if ((direction == HORIZONTAL && row == seam[col]) ||
+                        (direction == VERTICAL && col == seam[row])) {
+                    marker = "*";
+                    totalSeamEnergy += energy;
+                }
+                StdOut.printf("%7.2f%s ", energy, marker);
+            }
+            StdOut.println();
+        }
+        StdOut.printf("Total energy = %f\n", totalSeamEnergy);
+        StdOut.println();
+        StdOut.println();
+    }
+
+    // unit testing (optional)
+    public static void main(String[] args) {
+        String filePath = "/Users/geodan/Documents/seam-carving/images-for-testing/";
+        String pictureName = "10x12.png";
+        File imageFile = new File(filePath + pictureName);
+        Picture picture = new Picture(imageFile);
+        StdOut.printf("%s (%d-by-%d image)\n", imageFile, picture.width(), picture.height());
+        StdOut.println();
+        StdOut.println("The table gives the dual-gradient energies of each pixel.");
+        StdOut.println("The asterisks denote a minimum energy vertical or horizontal seam.");
+        StdOut.println();
+
+        SeamCarving carver = new SeamCarving(picture);
+
+
+        StdOut.printf("Vertical seam: { ");
+        int[] verticalSeam = carver.findVerticalSeam();
+        for (int x : verticalSeam)
+            StdOut.print(x + " ");
+        StdOut.println("}");
+        printSeam(carver, verticalSeam, VERTICAL);
+
+        StdOut.printf("Horizontal seam: { ");
+        int[] horizontalSeam = carver.findHorizontalSeam();
+        for (int y : horizontalSeam)
+            StdOut.print(y + " ");
+        StdOut.println("}");
+        printSeam(carver, horizontalSeam, HORIZONTAL);
+
+        Picture resizedPic = ImageResize.resize(picture, 4, 5);
+        File resizedFilePath = new File(filePath + "Resized" + pictureName);
+        resizedPic.save(resizedFilePath);
+        StdOut.printf("new image size is %d columns by %d rows\n", resizedPic.width(), resizedPic.height());
+        StdOut.printf("%s (%d-by-%d image)\n", resizedFilePath, picture.width(),
+                picture.height());
+
+
     }
 
 
